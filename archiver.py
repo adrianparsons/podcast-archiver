@@ -1,20 +1,23 @@
 import argparse
 import mimetypes
+import os
 
 from defusedxml.minidom import parse, parseString
+# NOTE: maybe use lxml?
+
 import requests
-
-
 
 DEFAULT_EXTENSION = ".mp3"
 
 def download_podcasts(xml_url, limit):
     r = requests.get(xml_url)
     dom = parseString(r.text)
-    count = 0
+    channel_titles = dom.getElementsByTagName("title")
+    directory = channel_titles[0].childNodes[0].data
+    os.mkdir(directory)
 
     episodes = dom.getElementsByTagName("item")
-
+    count = 1
     for episode in episodes:
         enclosure = episode.getElementsByTagName("enclosure")[0]
         audio_url = enclosure.getAttribute("url")
@@ -22,7 +25,7 @@ def download_podcasts(xml_url, limit):
 
         title = episode.getElementsByTagName("title")[0].childNodes[0].data
 
-        get_podcast_file(audio_url, audio_type, title)
+        get_podcast_file(audio_url, audio_type, directory + '/' + title)
 
         if limit:
             if count == limit:
@@ -33,6 +36,8 @@ def download_podcasts(xml_url, limit):
 def get_podcast_file(audio_url, audio_type, title):
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
     file_request = requests.get(audio_url)
+
+    # TODO some logging, perhaps optional, to mark beginning and end of podcast download process
 
     with open(title + extension, 'wb') as fd:
         # NOTE: Hmm, this automatically unzips content, I think. Worth reconsidering.
