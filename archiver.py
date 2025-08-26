@@ -1,9 +1,11 @@
+
+
 import argparse
 import mimetypes
 import os
 
 from defusedxml.minidom import parse, parseString
-# NOTE: maybe use lxml?
+# NOTE: maybe use lxml instead?
 
 import requests
 
@@ -14,6 +16,7 @@ def download_podcasts(xml_url, limit):
     dom = parseString(r.text)
     channel_titles = dom.getElementsByTagName("title")
     directory = channel_titles[0].childNodes[0].data
+
     os.mkdir(directory)
 
     episodes = dom.getElementsByTagName("item")
@@ -22,10 +25,11 @@ def download_podcasts(xml_url, limit):
         enclosure = episode.getElementsByTagName("enclosure")[0]
         audio_url = enclosure.getAttribute("url")
         audio_type = enclosure.getAttribute("type")
+        published_date = enclosure.getAttribute("pubDate")
 
         title = episode.getElementsByTagName("title")[0].childNodes[0].data
 
-        get_podcast_file(audio_url, audio_type, directory + '/' + title)
+        get_podcast_file(audio_url, audio_type, directory + '/' + title, published_date)
 
         if limit:
             if count == limit:
@@ -33,14 +37,15 @@ def download_podcasts(xml_url, limit):
             else:
                 count += 1
 
-def get_podcast_file(audio_url, audio_type, title):
+def get_podcast_file(audio_url, audio_type, title, published_date):
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
+
+    print(f"downloading {title} from {audio_url} \n")
+
     file_request = requests.get(audio_url)
 
-    # TODO some logging, perhaps optional, to mark beginning and end of podcast download process
-
     with open(title + extension, 'wb') as fd:
-        # NOTE: Hmm, this automatically unzips content, I think. Worth reconsidering.
+        # NOTE: This automatically unzips content, I think. Worth reconsidering.
         for chunk in file_request.iter_content(chunk_size=128):
             fd.write(chunk)
 
