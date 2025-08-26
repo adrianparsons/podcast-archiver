@@ -3,7 +3,7 @@ import mimetypes
 import os
 
 from defusedxml.minidom import parseString
-# NOTE: maybe use lxml instead?
+# NOTE: maybe use lxml or ElementTree instead?
 
 import requests
 
@@ -33,7 +33,7 @@ def download_podcast(xml_url, limit):
             if count == limit:
                 break
 
-            count += 1
+        count += 1
 
 
 def download_episode(audio_url, audio_type, title, published_date):
