@@ -1,5 +1,3 @@
-
-
 import argparse
 import mimetypes
 import os
@@ -11,7 +9,7 @@ import requests
 
 DEFAULT_EXTENSION = ".mp3"
 
-def download_podcasts(xml_url, limit):
+def download_podcast(xml_url, limit):
     r = requests.get(xml_url)
     dom = parseString(r.text)
     channel_titles = dom.getElementsByTagName("title")
@@ -26,11 +24,11 @@ def download_podcasts(xml_url, limit):
         enclosure = episode.getElementsByTagName("enclosure")[0]
         audio_url = enclosure.getAttribute("url")
         audio_type = enclosure.getAttribute("type")
-        published_date = enclosure.getAttribute("pubDate")
+        published_date = episode.getElementsByTagName("pubDate")[0].childNodes[0].data
 
         title = episode.getElementsByTagName("title")[0].childNodes[0].data
 
-        get_podcast_file(audio_url, audio_type, directory + "/" + title, published_date)
+        download_episode(audio_url, audio_type, directory + "/" + title, published_date)
 
         if limit:
             if count == limit:
@@ -38,10 +36,10 @@ def download_podcasts(xml_url, limit):
             else:
                 count += 1
 
-def get_podcast_file(audio_url, audio_type, title, published_date):
+def download_episode(audio_url, audio_type, title, published_date):
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
 
-    print(f"downloading {title} from {audio_url} \n")
+    print(f"downloading {title} from {published_date} \n")
 
     file_request = requests.get(audio_url)
 
@@ -57,7 +55,7 @@ def main():
     parser.add_argument("--limit", type=str, help="maximum number of episodes to download", default=2)
     args = parser.parse_args()
 
-    download_podcasts(args.rss_url, args.limit)
+    download_podcast(args.rss_url, args.limit)
 
 if __name__ == "__main__":
     main()
