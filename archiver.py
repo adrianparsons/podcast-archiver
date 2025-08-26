@@ -2,7 +2,7 @@ import argparse
 import mimetypes
 import os
 
-from defusedxml.minidom import parse, parseString
+from defusedxml.minidom import parseString
 # NOTE: maybe use lxml instead?
 
 import requests
@@ -25,7 +25,6 @@ def download_podcast(xml_url, limit):
         audio_url = enclosure.getAttribute("url")
         audio_type = enclosure.getAttribute("type")
         published_date = episode.getElementsByTagName("pubDate")[0].childNodes[0].data
-
         title = episode.getElementsByTagName("title")[0].childNodes[0].data
 
         download_episode(audio_url, audio_type, directory + "/" + title, published_date)
@@ -33,8 +32,9 @@ def download_podcast(xml_url, limit):
         if limit:
             if count == limit:
                 break
-            else:
-                count += 1
+
+            count += 1
+
 
 def download_episode(audio_url, audio_type, title, published_date):
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
@@ -56,6 +56,7 @@ def main():
     args = parser.parse_args()
 
     download_podcast(args.rss_url, args.limit)
+
 
 if __name__ == "__main__":
     main()
