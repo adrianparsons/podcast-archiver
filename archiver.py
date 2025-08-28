@@ -13,6 +13,7 @@ import requests
 DEFAULT_EXTENSION = ".mp3"
 DOWNLOAD_CHUNK_SIZE = 128
 
+
 def download_podcast(xml_url, limit):
     r = requests.get(xml_url)
     dom = parseString(r.text)
@@ -63,7 +64,14 @@ def main():
     parser.add_argument(
         "--limit", type=str, help="maximum number of episodes to download", default=2
     )
-    parser.add_argument("--verbose", type=str, help="verbose logging", default=logging.WARNING, nargs="?", const=logging.INFO)
+    parser.add_argument(
+        "--verbose",
+        type=str,
+        help="verbose logging",
+        default=logging.WARNING,
+        nargs="?",
+        const=logging.INFO,
+    )
     args = parser.parse_args()
 
     logging.basicConfig(level=args.verbose)
