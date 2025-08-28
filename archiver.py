@@ -3,6 +3,7 @@
 import argparse
 import mimetypes
 import os
+from pathlib import Path
 
 from defusedxml.minidom import parseString
 # NOTE: maybe use lxml or ElementTree instead?
@@ -20,9 +21,9 @@ def download_podcast(xml_url, limit):
     # TODO: catch index errors for all of these.
     directory = channel_titles[0].childNodes[0].data
 
-    # TODO: Handle case where the directory already exists.
     # TODO: Sanitize directory name.
-    os.mkdir(directory)
+    d = Path(directory)
+    d.mkdir(exist_ok=True)
 
     episodes = dom.getElementsByTagName("item")
     count = 1
