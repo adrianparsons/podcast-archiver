@@ -2,6 +2,7 @@
 
 import argparse
 import mimetypes
+import logging
 from pathlib import Path
 
 from defusedxml.minidom import parseString
@@ -11,7 +12,6 @@ import requests
 
 DEFAULT_EXTENSION = ".mp3"
 DOWNLOAD_CHUNK_SIZE = 128
-
 
 def download_podcast(xml_url, limit):
     r = requests.get(xml_url)
@@ -47,7 +47,7 @@ def download_episode(audio_url, audio_type, parent_directory, title, published_d
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
     path = Path(parent_directory, title).with_suffix(extension)
 
-    print(f"downloading {title} from {published_date} \n")
+    logging.info(f"downloading {title} from {published_date} \n")
 
     file_request = requests.get(audio_url)
 
@@ -63,8 +63,10 @@ def main():
     parser.add_argument(
         "--limit", type=str, help="maximum number of episodes to download", default=2
     )
+    parser.add_argument("--verbose", type=str, help="verbose logging", default=logging.WARNING, nargs="?", const=logging.INFO)
     args = parser.parse_args()
 
+    logging.basicConfig(level=args.verbose)
     download_podcast(args.rss_url, args.limit)
 
 
