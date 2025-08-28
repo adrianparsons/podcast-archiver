@@ -12,6 +12,7 @@ import requests
 DEFAULT_EXTENSION = ".mp3"
 DOWNLOAD_CHUNK_SIZE = 128
 
+
 def download_podcast(xml_url, limit):
     r = requests.get(xml_url)
     dom = parseString(r.text)
@@ -59,7 +60,9 @@ def download_episode(audio_url, audio_type, parent_directory, title, published_d
 def main():
     parser = argparse.ArgumentParser(description="Podcast archiver")
     parser.add_argument("rss_url", type=str, help="URL of the RSS feed")
-    parser.add_argument("--limit", type=str, help="maximum number of episodes to download", default=2)
+    parser.add_argument(
+        "--limit", type=str, help="maximum number of episodes to download", default=2
+    )
     args = parser.parse_args()
 
     download_podcast(args.rss_url, args.limit)
