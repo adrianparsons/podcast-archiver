@@ -15,9 +15,12 @@ def download_podcast(xml_url, limit):
     r = requests.get(xml_url)
     dom = parseString(r.text)
     channel_titles = dom.getElementsByTagName("title")
+
+    # TODO: catch index errors for all of these.
     directory = channel_titles[0].childNodes[0].data
 
     # TODO: Handle case where the directory already exists.
+    # TODO: Sanitize directory name.
     os.mkdir(directory)
 
     episodes = dom.getElementsByTagName("item")
@@ -46,7 +49,7 @@ def download_episode(audio_url, audio_type, title, published_date):
     file_request = requests.get(audio_url)
 
     with open(title + extension, "wb") as fd:
-        # NOTE: This automatically unzips content, I think. Worth reconsidering.
+        # WARN: This automatically unzips content, making us succeptible to zip bomb attacks.
         for chunk in file_request.iter_content(chunk_size=128):
             fd.write(chunk)
 
