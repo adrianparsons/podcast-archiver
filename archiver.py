@@ -2,7 +2,6 @@
 
 import argparse
 import mimetypes
-import os
 from pathlib import Path
 
 from defusedxml.minidom import parseString
@@ -19,11 +18,11 @@ def download_podcast(xml_url, limit):
     channel_titles = dom.getElementsByTagName("title")
 
     # TODO: catch index errors for all of these.
-    directory = channel_titles[0].childNodes[0].data
+    directory_name = channel_titles[0].childNodes[0].data
 
     # TODO: Sanitize directory name.
-    d = Path(directory)
-    d.mkdir(exist_ok=True)
+    directory = Path(directory_name)
+    directory.mkdir(exist_ok=True)
 
     episodes = dom.getElementsByTagName("item")
     count = 1
@@ -34,7 +33,7 @@ def download_podcast(xml_url, limit):
         published_date = episode.getElementsByTagName("pubDate")[0].childNodes[0].data
         title = episode.getElementsByTagName("title")[0].childNodes[0].data
 
-        download_episode(audio_url, audio_type, directory + "/" + title, published_date)
+        download_episode(audio_url, audio_type, directory, title, published_date)
 
         if limit:
             if count == limit:
@@ -43,14 +42,15 @@ def download_podcast(xml_url, limit):
         count += 1
 
 
-def download_episode(audio_url, audio_type, title, published_date):
+def download_episode(audio_url, audio_type, parent_directory, title, published_date):
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
+    path = Path(parent_directory, title).with_suffix(extension)
 
     print(f"downloading {title} from {published_date} \n")
 
     file_request = requests.get(audio_url)
 
-    with open(title + extension, "wb") as fd:
+    with open(path, "wb") as fd:
         # WARN: This automatically unzips content, making us succeptible to zip bomb attacks.
         for chunk in file_request.iter_content(chunk_size=DOWNLOAD_CHUNK_SIZE):
             fd.write(chunk)
