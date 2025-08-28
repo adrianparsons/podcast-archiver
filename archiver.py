@@ -10,6 +10,7 @@ from defusedxml.minidom import parseString
 import requests
 
 DEFAULT_EXTENSION = ".mp3"
+DOWNLOAD_CHUNK_SIZE = 128
 
 def download_podcast(xml_url, limit):
     r = requests.get(xml_url)
@@ -50,7 +51,7 @@ def download_episode(audio_url, audio_type, title, published_date):
 
     with open(title + extension, "wb") as fd:
         # WARN: This automatically unzips content, making us succeptible to zip bomb attacks.
-        for chunk in file_request.iter_content(chunk_size=128):
+        for chunk in file_request.iter_content(chunk_size=DOWNLOAD_CHUNK_SIZE):
             fd.write(chunk)
 
 
