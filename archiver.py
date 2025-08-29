@@ -8,6 +8,7 @@ from pathlib import Path
 from defusedxml.minidom import parseString
 # NOTE: maybe use lxml or ElementTree instead?
 
+from dateutil.parser import parse
 import requests
 
 DEFAULT_EXTENSION = ".mp3"
