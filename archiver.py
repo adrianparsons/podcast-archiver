@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
 import argparse
-import mimetypes
 import logging
+import mimetypes
 from pathlib import Path
 
 from defusedxml.minidom import parseString
