@@ -36,8 +36,14 @@ def download_podcast(xml_url: str, limit: int, skip: int) -> None:
         enclosure = episode.getElementsByTagName("enclosure")[0]
         audio_url = enclosure.getAttribute("url")
         audio_type = enclosure.getAttribute("type")
-        title = episode.getElementsByTagName("title")[0].childNodes[0].data.replace("/", "_")
-        published_date_raw = episode.getElementsByTagName("pubDate")[0].childNodes[0].data
+        title = (
+            episode.getElementsByTagName("title")[0]
+            .childNodes[0]
+            .data.replace("/", "_")
+        )
+        published_date_raw = (
+            episode.getElementsByTagName("pubDate")[0].childNodes[0].data
+        )
         published_date = parse(published_date_raw)
 
         count += 1
@@ -62,9 +68,11 @@ def download_episode(
 ) -> None:
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
     published_date_iso = published_date.date().isoformat()
-    path = Path(parent_directory, f"{published_date_iso} {title}").with_suffix(extension)
+    path = Path(parent_directory, f"{published_date_iso} {title}").with_suffix(
+        extension
+    )
 
-    logging.info(f"downloading {title} from {published_date.strftime("%B %d, %Y")} \n")
+    logging.info(f"downloading {title} from {published_date.strftime('%B %d, %Y')} \n")
 
     response = requests.get(audio_url, stream=True)
     response.raise_for_status()
