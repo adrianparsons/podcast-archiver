@@ -11,6 +11,7 @@ from defusedxml.minidom import parseString
 import requests
 
 DEFAULT_EXTENSION = ".mp3"
+DEFAULT_MAX_EPISODES = 2
 DOWNLOAD_CHUNK_SIZE = 128
 
 
@@ -62,7 +63,10 @@ def main():
     parser = argparse.ArgumentParser(description="Podcast archiver")
     parser.add_argument("rss_url", type=str, help="URL of the RSS feed")
     parser.add_argument(
-        "--limit", type=str, help="maximum number of episodes to download", default=2
+        "--limit",
+        type=str,
+        help="maximum number of episodes to download",
+        default=DEFAULT_MAX_EPISODES,
     )
     parser.add_argument(
         "--verbose",
