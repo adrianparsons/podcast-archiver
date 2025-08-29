@@ -14,6 +14,7 @@ DEFAULT_EXTENSION = ".mp3"
 DEFAULT_MAX_EPISODES = 2
 DOWNLOAD_CHUNK_SIZE = 128
 
+
 def download_podcast(xml_url: str, limit: int | None = None) -> None:
     r = requests.get(xml_url)
     dom = parseString(r.text)
@@ -44,7 +45,13 @@ def download_podcast(xml_url: str, limit: int | None = None) -> None:
         count += 1
 
 
-def download_episode(audio_url: str, audio_type: str, parent_directory: Path, title: str, published_date: str) -> None:
+def download_episode(
+    audio_url: str,
+    audio_type: str,
+    parent_directory: Path,
+    title: str,
+    published_date: str,
+) -> None:
     extension = mimetypes.guess_extension(audio_type) or DEFAULT_EXTENSION
     path = Path(parent_directory, title).with_suffix(extension)
 
